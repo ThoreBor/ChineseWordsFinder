@@ -56,6 +56,7 @@ all_data = ""
 seconds = 0
 minutes = 0
 hours = 0
+possible_combi = 116721
 
 def extractChinese(output):
 	extract = re.compile(u'[^\u4E00-\u9FA5]')
@@ -71,16 +72,8 @@ def WordFinder():
 	all_data = ''.join(set(all_data))
 	all_data_list = list(all_data)
 	number_of_characters = len(all_data_list)
-	all_data_list_r = all_data_list[::-1]
-	pair_list = []
-	word_list = []
 	counter = 0
 	found = 0
-	for pair in itertools.combinations(all_data_list,2):
-		pair_list.append(pair)
-	for pair in itertools.combinations(all_data_list_r,2):
-		pair_list.append(pair)
-	possible_combi = len(pair_list)
 	username = getpass.getuser()
 	textfile_info = '''This data comes from:
 CC-CEDICT
@@ -108,25 +101,24 @@ Version: 2019-02-07 07:15:06
 If you delete the info text (everything above, including this line), this text file can be imported into Anki. You need a note type with four fields: traditional, simplified, pinyin, english.
 
 '''
-	anki_file =  open("C:/Users/"+username+"/Desktop/WordsFound.txt", "w", encoding="utf-8")
-	anki_file.write(textfile_info)
+	try:
+		anki_file =  open("C:/Users/"+username+"/Desktop/WordsFound.txt", "w", encoding="utf-8")
+		anki_file.write(textfile_info)
+	except:
+		anki_file =  open("WordsFound.txt", "w", encoding="utf-8")
+		anki_file.write(textfile_info)
 	#<b>Unique characters: </b>%(all_data)s<br>
 	info = '''
 		<b>Unique characters found: </b>%(number_of_characters)s<br>
-		<b>Possible two syllable Words: </b>%(possible_combi)s<br>
+		This add-on finds all Chinese words in the CC-CEDICT dictionary that only use the characters
+		in your collection and creates a text file with the words, pinyin and English translation
+		that can be imported into Anki. This should only take a few seconds. 
+		<br> If you use traditional characters got to Tools>Add-ons>Chinese Words Finder>Config and follow the instructions. 
+		<br>Licensed under the MIT License.
 		<div>
-			This add-on will look for Chinese words in the <b>%(possible_combi)s</b> possible two syllable words made out of the <b>%(number_of_characters)s</b> characters found in your collection
-			by looking each one up in the CC-CEDICT dictionary (published by MDBG).<br><br>
-			<i> Depending on how many characters there are in your collection, this could take up to several hours and use quite a lot of CPU.
-			If you have a large collection, I recommend running this add-on overnight with all other programs closed.</i><br>
-			<i>Maybe consider making a backup before you continue - just in case something goes wrong. </i>
-			<br><br>
-			<b>Do you want to continue?<b>
-		''' % {
-			'all_data': all_data,
-			'number_of_characters': number_of_characters,
-			'possible_combi': (f"{possible_combi:,d}")
-		}
+		<b>Do you want to continue?<b>
+		''' % {'number_of_characters':number_of_characters
+					}
 	if not askUser(info, title="Chinese Words Finder"):
 		return
 
@@ -138,90 +130,51 @@ If you delete the info text (everything above, including this line), this text f
 	c = conn.cursor()
 
 	mw.progress.start(immediate=True, min=0, max=possible_combi)
-	for i in pair_list:
-		if counter > 99:
-			if counter == 100:
-				end = time.time()
-			timetotal = (end - start)
-			searches_left = (possible_combi - counter)
-			time_per_search = timetotal/100
-			time_left = searches_left*time_per_search
-			global seconds
-			global minutes
-			global hours
-			seconds = time_left
-			minutes = seconds/60
-			hours = minutes/60
-			seconds = math.floor(seconds)
-			minutes = round(minutes, 1)
-			hours = round(hours, 1)
+		
+	c.execute('SELECT * FROM dictionary')
+
+	config = mw.addonManager.getConfig(__name__)
+	tos = config['tos']
+
+
+	for row in c.fetchall():
+
+		trad = row[tos]
 		counter = counter + 1
-		single = ''.join(i)
-		c.execute('SELECT * FROM dictionary WHERE hanzi_simp=? OR hanzi_trad=?',(single, single))
-		for row in c.fetchall():
-			word = row[0]
-			word_list.append(word)
-			try:
-				x = list(row)
-				found = found + 1
-			except:
-				pass
-			traditional = x[0]
-			simplified = x[1]
-			p = x[2]
-			english = x[3]
-			english = english[:-3]
-			#p = pinyin.decode(p)
-			anki_line = str(traditional + "	" + simplified + "	" + p + "	" + english + "\n")
-			anki_file.write(anki_line)
-			if float(minutes) > 60:
+		l = len(trad)
+		lc = 0
+		for i in trad:
+			if i in all_data_list:
+				lc = lc + 1
+				
+			if lc == l:
+				try:
+					x = list(row)
+					found = found + 1
+				except:
+					pass
+				traditional = x[0]
+				simplified = x[1]
+				p = x[2]
+				english = x[3]
+				english = english[:-3]
+				line = str(traditional + "	" + simplified + "	" + p + "	" + english + "\n")
+				anki_file.write(line)
 				msg = '''
 				<b>%(counter)d / %(total)d <br>
 				<b>Searching:</b> %(hanzi)s<br>
 				<b>Words found:</b> %(found)d<br>
-				<b>Time remaining (hours):</b> %(time_left)s<br>
-				<i> Ctrl+Shift+ESC to cancel.<i>
 				''' % {
-					'hanzi': single,
-					'counter': counter,
-					'total': possible_combi,
-					'found': found,
-					'time_left': hours
-				}
-				mw.progress.update(label=msg, value=counter)
-			if float(minutes) <= 60 and float(minutes) > 1:
-				msg = '''
-				<b>%(counter)d / %(total)d <br>
-				<b>Searching:</b> %(hanzi)s<br>
-				<b>Words found:</b> %(found)d<br>
-				<b>Time remaining (minutes):</b> %(time_left)s<br>
-				<i> Ctrl+Shift+ESC to cancel.<i>
-				''' % {
-					'hanzi': single,
+					'hanzi': trad,
 					'counter': counter,
 					'total': possible_combi,
 					'found': found,
 					'time_left': minutes
 				}
 				mw.progress.update(label=msg, value=counter)
-			if float(minutes) < 1:
-					msg = '''
-					<b>%(counter)d / %(total)d <br>
-					<b>Searching:</b> %(hanzi)s<br>
-					<b>Words found:</b> %(found)d<br>
-					<b>Time remaining (seconds):</b> %(time_left)s<br>
-					<i> Ctrl+Shift+ESC to cancel.<i>
-					''' % {
-						'hanzi': single,
-						'counter': counter,
-						'total': possible_combi,
-						'found': found,
-						'time_left': seconds
-					}
-					mw.progress.update(label=msg, value=counter)
 	anki_file.close()
 	mw.progress.finish()
-	showInfo("I found %s words. You can find the text file on your desktop." % (found), title="Chinese Words Finder")
+	showInfo("%s words found. If the file is not on your desktop, you'll find it in the addon folder." % (found), title="Chinese Words Finder")
 
 
 # create a new menu item, "test"
