@@ -115,7 +115,6 @@ If you delete the info text (everything above, including this line), this text f
 	except:
 		anki_file =  open("WordsFound.txt", "w", encoding="utf-8")
 		anki_file.write(textfile_info)
-	#<b>Unique characters: </b>%(all_data)s<br>
 	info = '''
 		<b>Unique characters in %(deckname)s: </b>%(number_of_characters)s<br>
 		This add-on finds all Chinese words in the CC-CEDICT dictionary that only use the characters
@@ -132,7 +131,6 @@ If you delete the info text (everything above, including this line), this text f
 		return
 
 	start = time.time()
-	#time_left = "Time is being calculated..."
 
 	db_path = join(dirname(realpath(__file__)), 'CC-CEDICT_dictionary.db')
 	conn = connect(db_path)
@@ -186,9 +184,7 @@ If you delete the info text (everything above, including this line), this text f
 	showInfo("%s words found. If the file is not on your desktop, you'll find it in the addon folder." % (found), title="Chinese Words Finder")
 
 
-# create a new menu item, "test"
+
 action = QAction("Chinese Words Finder", mw)
-# set it to call testFunction when it's clicked
 action.triggered.connect(WordFinder)
-# and add it to the tools menu
 mw.form.menuTools.addAction(action)
