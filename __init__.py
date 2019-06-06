@@ -64,9 +64,17 @@ def extractChinese(output):
 	return output
 
 def WordFinder():	
-	for flds in mw.col.db.execute("select flds from notes"):
+	notes_in_deck = []
+	config = mw.addonManager.getConfig(__name__)
+	deckname = str(config['deckname'])
+	searchterm = "deck:'" + deckname + "'"
+	#searchterm = "deck:'%s'" % deckname
+	notes_in_deck = mw.col.findNotes(searchterm)
+
+	
+	for i in notes_in_deck:
 		global all_data
-		all_data = all_data + str(flds)
+		all_data = all_data + str(mw.col.db.scalar("SELECT flds FROM notes WHERE id=?" ,i, ))
 
 	all_data = extractChinese(all_data)
 	all_data = ''.join(set(all_data))
@@ -109,15 +117,16 @@ If you delete the info text (everything above, including this line), this text f
 		anki_file.write(textfile_info)
 	#<b>Unique characters: </b>%(all_data)s<br>
 	info = '''
-		<b>Unique characters found: </b>%(number_of_characters)s<br>
+		<b>Unique characters in %(deckname)s: </b>%(number_of_characters)s<br>
 		This add-on finds all Chinese words in the CC-CEDICT dictionary that only use the characters
 		in your collection and creates a text file with the words, pinyin and English translation
 		that can be imported into Anki. This should only take a few seconds. 
-		<br> If you use traditional characters got to Tools>Add-ons>Chinese Words Finder>Config and follow the instructions. 
-		<br>Licensed under the MIT License.
+		<br><br><b> To change the deck that is going to be analysed, 
+		go to Tools>Add-ons>Chinese Words Finder>Config and follow the instructions. </b>
+		<br><br>Licensed under the MIT License.<br>
 		<div>
 		<b>Do you want to continue?<b>
-		''' % {'number_of_characters':number_of_characters
+		''' % {'number_of_characters':number_of_characters, 'deckname':deckname
 					}
 	if not askUser(info, title="Chinese Words Finder"):
 		return
