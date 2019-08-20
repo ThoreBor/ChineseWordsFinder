@@ -1,4 +1,4 @@
-# Copyright 2019 Thore Tyborski
+# Chinese Words Finder V1.2 Copyright 2019 Thore Tyborski
 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -52,11 +52,35 @@ import getpass
 import random
 import time
 import math
+import requests
+from bs4 import BeautifulSoup
+import webbrowser
+
 all_data = ""
 seconds = 0
 minutes = 0
 hours = 0
 possible_combi = 116721
+
+def Update():
+	url = 'https://ankiweb.net/shared/info/2048169015'
+	headers = {"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36 OPR/62.0.3331.116'}
+	page = requests.get(url, headers=headers)
+	soup = BeautifulSoup(page.content, 'html.parser')
+	version = str(soup.find_all("h1"))
+	version = version.replace('[</h1>', '')
+	version = version.replace('</h1>]', '')
+	version = version.split("Chinese Words Finder ",1)[1]
+	if version != "V1.2":
+		info = '''You can update Chinese Words Finder to Version %(version)s. <br><b>Do you want to do it now?</b>''' % {'version':version}
+
+		if not askUser(info, title="Chinese Words Finder - UPDATE!"):
+			WordFinder()
+			return
+		else:
+			webbrowser.open('https://ankiweb.net/shared/info/2048169015', new = 2)
+	else:
+		WordFinder()
 
 def extractChinese(output):
 	extract = re.compile(u'[^\u4E00-\u9FA5]')
@@ -186,5 +210,5 @@ If you delete the info text (everything above, including this line), this text f
 
 
 action = QAction("Chinese Words Finder", mw)
-action.triggered.connect(WordFinder)
+action.triggered.connect(Update)
 mw.form.menuTools.addAction(action)
