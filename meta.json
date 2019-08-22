@@ -1,1 +1,1 @@
-{"config": {"deckname": "Default", "tos": 1}}
+{"config": {"deckname": ["Default"], "filter": ["variant", "surname", "county", "province", "prefecture", "town", "city"], "filter_active": "False", "max_lenght": 0, "min_length": 2, "tos": 1}}
