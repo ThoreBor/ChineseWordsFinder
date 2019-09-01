@@ -1,1 +1,1 @@
-{"config": {"deckname": ["Default"], "filter": ["variant", "surname", "county", "province", "prefecture", "town", "city"], "filter_active": "False", "max_lenght": 0, "min_length": 2, "tos": 1}}
+{"config": {"HSK": 6, "deckname": ["Modernes Chinesisch I", "Modernes Chinesisch II", "Modernes Chinesisch III"], "field_number": 1, "filter": ["variant", "surname", "county", "province", "prefecture", "town", "city"], "filter_active": "True", "max_lenght": 0, "min_length": 2, "tos": 0}, "name": "Chinese Words Finder V13", "mod": 1567348496}
