@@ -99,14 +99,15 @@ def getdata():
 
 	decknames = decknames[:-5]
 	all_data = extractChinese(all_data)
+	raw = all_data
 	all_data = ''.join(set(all_data))
 	all_data_list = list(all_data)
 	number_of_characters = len(all_data_list)
 	
-	return all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_active, filter_list, min_length, max_lenght, word_list, config
+	return all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_active, filter_list, min_length, max_lenght, word_list, config, raw
 
 def WordFinder():
-	all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_active, filter_list, min_length, max_lenght, word_list, config = getdata()
+	all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_active, filter_list, min_length, max_lenght, word_list, config, raw = getdata()
 	username = getpass.getuser()
 	textfile_info = '''This data comes from:
 CC-CEDICT
@@ -138,19 +139,21 @@ If you delete the info text (everything above, including this line), this text f
 	try:
 		anki_file =  open("C:/Users/"+username+"/Desktop/WordsFound.txt", "w", encoding="utf-8")
 		anki_file.write(textfile_info)
+		d = "You'll find the text file on your desktop."
 	except:
 		anki_file =  open("WordsFound.txt", "w", encoding="utf-8")
 		anki_file.write(textfile_info)
+		d = "You'll find the text file in the Anki collection.media folder."
 	info = '''
 	<b>Unique characters in %(deckname)s (%(note_number)s notes): %(number_of_characters)s</b><br>
 	This add-on finds all Chinese words in the CC-CEDICT dictionary that only use the characters
-	in your collection and creates a text file with the words, pinyin and English translation
-	that can be imported into Anki. This should only take a few seconds. 
+	in the decks you selected and creates a text file with the words, pinyin and English translation
+	that can be imported into Anki. %(d)s This should only take a few seconds. 
 	<br><br><b>Go to CWF>Configurations (Ctrl+C) and follow the instructions to change the deck(s) you want to analyse and to customize other options.</b>
 	<br><br>Licensed under the MIT License.<br>
 	<div>
 	<b>Do you want to continue?<b>
-	''' % {'number_of_characters':number_of_characters, 'deckname':decknames, 'note_number': len(notes_in_deck)
+	''' % {'number_of_characters':number_of_characters, 'deckname':decknames, 'note_number': len(notes_in_deck), 'd': d
 				}
 	if not askUser(info, title="Chinese Words Finder"):
 		return
@@ -214,10 +217,10 @@ If you delete the info text (everything above, including this line), this text f
 		mw.progress.update(label=msg, value=counter)
 	anki_file.close()
 	mw.progress.finish()
-	showInfo("%s words found. If the file is not on your desktop, you'll find it in the addon folder." % (found), title="Chinese Words Finder")
+	showInfo("%s words found." % (found), title="Chinese Words Finder")
 
 def hskFinder():
-	all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_active, filter_list, min_length, max_lenght, word_list, config = getdata()
+	all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_active, filter_list, min_length, max_lenght, word_list, config, raw = getdata()
 	username = getpass.getuser()
 	if tos == 0:
 		tos = 1
@@ -262,16 +265,18 @@ If you delete the info text (everything above, including this line), this text f
 	try:
 		anki_file =  open("C:/Users/"+username+"/Desktop/MissingHSK.txt", "w", encoding="utf-8")
 		anki_file.write(textfile_info)
+		d = "You'll find the results in a file on your desktop."
 	except:
 		anki_file =  open("MissingHSK.txt", "w", encoding="utf-8")
 		anki_file.write(textfile_info)
+		d = "You'll find the results in a file in the Anki collection.media folder."
 	info = '''
 	<div>This tool finds all HSK %(hsk)s words that are missing in %(deckname)s (%(note_number)s notes).</div>
-	<br><br><b>Go to CWF>Configurations (Ctrl+C) and follow the instructions to change the deck(s) you want to analyse and HSK level.</b>
+	<br><br><b>Go to CWF>Configurations (Ctrl+C) and follow the instructions to change the deck(s) you want to analyse and HSK level.</b><br>%(d)s
 	<br><br>Licensed under the MIT License.<br>
 	<div>
 	<b>Do you want to continue?<b>
-	''' % {'hsk': HSK, 'deckname':decknames, 'note_number': len(notes_in_deck)
+	''' % {'hsk': HSK, 'deckname':decknames, 'note_number': len(notes_in_deck), "d": d
 				}
 	if not askUser(info, title="Missing HSK words"):
 		return
@@ -322,8 +327,49 @@ If you delete the info text (everything above, including this line), this text f
 	anki_file.write(str(extra_list))
 	anki_file.close()
 	mw.progress.finish()
-	showInfo("%s words found. There were %s words, that aren't in the HSK list. They are listed at the end of the text file. If the file is not on your desktop, you'll find it in the addon folder." % (found, extra), title="Missing HSK words")
+	showInfo("%s words found. There were %s words, that aren't in the HSK list. They are listed at the end of the text file." % (found, extra), title="Missing HSK words")
 
+def frequency():
+	try:
+		all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_active, filter_list, min_length, max_lenght, word_list, config, raw = getdata()
+		unique = []
+		value = []
+		f_file = ""
+		counter = 0
+		username = getpass.getuser()
+		for i in all_data_list:
+			unique.append(i)
+			value.append(raw.count(i))
+		value, unique = zip(*sorted(zip(value, unique)))
+		value, unique = (list(t) for t in zip(*sorted(zip(value, unique))))
+		unique = unique[::-1]
+		value = value[::-1]
+
+		for i in unique:
+			f_file = f_file + "\n"+ str(counter+1) + ": " + i + ": " + str(value[counter])
+			counter = counter + 1
+
+		unique2 = unique[:10]
+		value2 = value[:10]
+		f_info = "<b>Top 10 characters in " + decknames + "(" + str(len(notes_in_deck)) + " notes) " + ":</b><br>"
+		counter = 0
+		for i in unique2:
+			f_info = f_info + "<br>"+ str(counter+1) + ": " + i + ": " + str(value2[counter])
+			counter = counter + 1
+		f_info = f_info + "<br><br><b>Go to CWF>Configurations (Ctrl+C) and follow the instructions to change the deck(s) you want to analyse.<br><br>Do you want to see the complete results?"
+		if not askUser(f_info, title="Character frequency"):
+				return
+		else:
+			try:
+				anki_file =  open("C:/Users/"+username+"/Desktop/CharacterFrequency.txt", "w", encoding="utf-8")
+				anki_file.write(f_file)
+				tooltip("The file is on your desktop.")
+			except:
+				anki_file =  open("CharacterFrequency.txt", "w", encoding="utf-8")
+				anki_file.write(f_file)
+				tooltip("The file is in the collection.media folder.")
+	except:
+		showWarning("Go to CWF>Configurations (Ctrl+C) and select the deck you want to analyse.")
 
 ###MENU###
 def About():
@@ -337,7 +383,6 @@ def config():
 	mw.mgr = mw.addonManager
 	conf = mw.addonManager.getConfig(addon)
 	ConfigEditor(mw, addon, conf)
-	#tooltip("You can drag the configurations window if you want it to be larger.")
 
 def Update():
 	try:
@@ -347,6 +392,10 @@ def Update():
 		soup = BeautifulSoup(page.content, 'html.parser')
 		version = soup.find(id='newest_verion').get_text()
 		log = soup.find(id='changelog').get_text()
+		log_list = log.split(',')
+		log = ""
+		for i in log_list:
+			log = log + "- " + i + "<br>"
 	except:
 		showWarning("Please check your internet connection.", title="Chinese Words Finder ")
 		return
@@ -361,12 +410,15 @@ def Update():
 		showInfo("You are using the newest version (%s)." % this_version, title="Chinese Words Finder")
 
 def download():
-	mw.mgr = mw.addonManager
-	updated = ['2048169015']
-	mw.mgr.downloadIds(updated)
-	tooltip(_("Chinese Words Finder was updated successfully."))
+	try:
+		mw.mgr = mw.addonManager
+		updated = ['2048169015']
+		mw.mgr.downloadIds(updated)
+		tooltip(_("Chinese Words Finder was updated successfully."))
+	except:
+		tooltip(_("Update failed..."))
 	
-def add_menu(Name, Button, exe, sc):
+def add_menu(Name, Button, exe, *sc):
 	action = QAction(Button, mw)
 	action.triggered.connect(exe)
 	if not hasattr(mw, 'menu'):
@@ -376,14 +428,16 @@ def add_menu(Name, Button, exe, sc):
 		mw.menu[Name] = add
 		mw.form.menubar.insertMenu(mw.form.menuTools.menuAction(), add)
 	mw.menu[Name].addAction(action)
-	action.setShortcut(QKeySequence(sc))
+	for i in sc:
+		action.setShortcut(QKeySequence(i))
 
-add_menu('CWF','Start', WordFinder, 'Ctrl+S')
+add_menu('CWF','Chinese Words Finder', WordFinder, 'Ctrl+W')
 add_menu('CWF','Find Missing HSK words', hskFinder, 'Ctrl+H')
+add_menu('CWF', 'Character frequency', frequency, 'Ctrl+F')
 add_menu('CWF','Configurations', config, 'Ctrl+C')
 add_menu('CWF','Check for Updates', Update, 'Ctrl+U')
-add_menu('CWF','Make a feature request or report a bug', github, 'Ctrl+B')
-add_menu('CWF','About', About, 'Ctrl+A')
+add_menu('CWF','Make a feature request or report a bug', github)
+add_menu('CWF','About', About)
 ###MENU###
 
 
