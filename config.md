@@ -1,8 +1,9 @@
-<b>Everything but the HSK configurations will effect the 'Chinese Words Finder' results. Only the HSK, field_number and deckname configurations will effect the 'Missing HSK words' results. Only the deckname and field_number configurations will effect the 'Character frequency results'. </b><br><br>
-Change the HSK level to the one you want (1-6). The level you pick inludes all previous levels.<br><br>
-Replace "Default" with the deck you want to analyse. If you want to analyse more than one deck, write the name of the deck in the next line seperated by a comma. <br><br>
-Replace "parent deck::sub deck" with the name of your sub deck, if you want to exclude one. If you want to exclude more than one sub deck, write it in the next line seperated by a comma.<br><br>
-If you only want to analyse the content of a specific field, change field_number to the field of your choosing. 0 means that all fields will be analysed. <b>You need to set it to a specific field if you want to use the "Missing HSK words" tool.</b><br></br><br>
-If you change filter_active to True, entries that contain words from the "filter" won't show up in the results. You can change and add words to the filter.<br><br>
-Single character words are ignored by default. If you want to include them change min_length to 1, change it to 3 to ignore two character words etc. If you want to set a maxium length for words, change max_length to something other than 0. 0 means that there's no limit.<br><br>
-Change the 1 to 0, if you use traditional characters.
+<b>Bis auf das HSK Level und language werden sich alle Einstellungen auf die Ergebnisse von 'Finde chinesische Wörter' auswirken. Nur deckname und field_number beeinflussen 'Finde fehlende HSK Wörter'</b><br><br>
+Wählen Sie ein HSK Level zwischen 1 und 6. Das ausgewählte Level beinhaltet alle vorheringen Level.<br><br>
+Ersetzten Sie 'Default' mit dem Stapel den Sie analysieren wollen. Trennen Sie mehrere Stapel durch ein Kommer und schreiben Sie es die nächste Zeile.<br><br>
+Ersetzten Sie 'parent deck::sub deck' mit dem Sub-Stapel der bei der Analysie ignoriert werden soll. Mehrere Sub-Stapel bitte durch ein Komma und eine Zeile getrennt sein.<br><br>
+Ersetzten Sie die Zahl bei field_number wenn nur ein bestimmtes Feld untersucht werden soll. 0 bedeutet, dass alle Felder beachtet werden. <b>Um fehlende HSK Worte zu finden muss ein bestimmtes Feld ausgewählt werden.</b><br></br><br>
+Wenn filter_active = True ist, werden Worte aus dem Filter nicht in den Ergebnissen erscheinen.<br><br>
+Verfügabare Sprachen sind zur Zeit German und English. Nach dem Ändern der Spracheinstellungen muss Anki neugestartet werden. Die Spracheinstellungen beeinflussen nur die UI nicht die Ergebnisse.<br><br>
+Einzelzeichen werden automatisch ignoriert. Wenn sie beachtet werden sollen, muss min_lenght zu 1 geändert werden. Wenn Zwei-Zeichen-Worte ignoriert werden sollen, muss min_lenght zu 3 geändert werden. Die maximal Länge kann mit max_lenght eingestellt werden. 0 bedeutet, dass es keine maximale Länge gibt.<br><br>
+Ersetzten Sie die 1 durch eine 0, wenn Sie Langzeichen verwenden.
