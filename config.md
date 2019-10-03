@@ -1,9 +1,0 @@
-<b>Everything but the HSK and language configurations will affect the 'Chinese Words Finder' results. Only the HSK, field_number and deckname configurations will effect the 'Missing HSK words' results. Only the deckname and field_number configurations will effect the 'Character frequency results'. </b><br><br>
-Change the HSK level to the one you want (1-6). The level you pick inludes all previous levels.<br><br>
-Replace "Default" with the deck you want to analyse. If you want to analyse more than one deck, write the name of the deck in the next line seperated by a comma. <br><br>
-Replace "parent deck::sub deck" with the name of your sub deck, if you want to exclude one. If you want to exclude more than one sub deck, write it in the next line seperated by a comma.<br><br>
-If you only want to analyse the content of a specific field, change field_number to the field of your choosing. 0 means that all fields will be analysed. <b>You need to set it to a specific field if you want to use the "Missing HSK words" tool.</b><br></br><br>
-If you change filter_active to True, entries that contain words from the "filter" won't show up in the results. You can change and add words to the filter.<br><br>
-Available languages are English and German. You need to resart Anki after you change it. The language only affects the UI not the results.<br><br>
-Single character words are ignored by default. If you want to include them change min_length to 1, change it to 3 to ignore two character words etc. If you want to set a maxium length for words, change max_length to something other than 0. 0 means that there's no limit.<br><br>
-Change the 1 to 0, if you use traditional characters.
