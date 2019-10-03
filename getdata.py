@@ -1,17 +1,5 @@
 from aqt import mw
-from aqt.utils import showInfo, askUser, showWarning, tooltip
-from PyQt5.QtWidgets import QAction, QActionGroup, QMenu
-from aqt.qt import *
-import sqlite3
-from sqlite3 import connect
-from os.path import dirname, join, realpath
 import re
-import getpass
-import requests
-from bs4 import BeautifulSoup
-import webbrowser
-from aqt.addons import ConfigEditor, AddonsDialog
-
 
 def extractChinese(output):
 	extract = re.compile(u'[^\u4E00-\u9FA5]')

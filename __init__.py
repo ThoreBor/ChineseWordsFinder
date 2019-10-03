@@ -21,17 +21,13 @@
 
 from aqt import mw
 from aqt.utils import showInfo, askUser, showWarning, tooltip
-from PyQt5.QtWidgets import QAction, QActionGroup, QMenu
+from PyQt5.QtWidgets import QAction, QMenu
 from aqt.qt import *
-import sqlite3
 from sqlite3 import connect
 from os.path import dirname, join, realpath
-import re
-import getpass
 import requests
 from bs4 import BeautifulSoup
 import webbrowser
-from aqt.addons import ConfigEditor, AddonsDialog
 from .WordFinder import WordFinder
 from .HSK import hskFinder
 from .freq import frequency
@@ -44,9 +40,6 @@ all_data = ""
 this_version = "V1.5"
 config = mw.addonManager.getConfig(__name__)
 language = config['language']
-
-with open(join(dirname(realpath(__file__)), 'config.md'), 'w', encoding="utf-8") as config_file:
-	config_file.write(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Config' ").fetchone()))
 
 ###MENU###
 def reviews():
@@ -71,8 +64,8 @@ def github():
 	webbrowser.open('https://github.com/ThoreBor/ChineseWordsFinder/issues')
 
 def config():
-	d = start_config()
-	if d.exec():
+	s = start_config()
+	if s.exec():
 		pass
 
 def Update():
@@ -125,7 +118,7 @@ def add_menu(Name, Button, exe, *sc):
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 1' ").fetchone()), WordFinder, 'Ctrl+W')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 2' ").fetchone()), hskFinder, 'Ctrl+H')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 3' ").fetchone()), frequency, 'Ctrl+F')
-add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 4' ").fetchone()), config, 'Ctrl+C')
+add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 4' ").fetchone()), config, 'Ctrl+Alt+C')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 5' ").fetchone()), Update, 'Ctrl+U')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 6' ").fetchone()), github)
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 7' ").fetchone()), About)

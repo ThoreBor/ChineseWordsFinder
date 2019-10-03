@@ -1,17 +1,9 @@
 from .getdata import getdata
 from aqt import mw
-from aqt.utils import showInfo, askUser, showWarning, tooltip
-from PyQt5.QtWidgets import QAction, QActionGroup, QMenu
-from aqt.qt import *
-import sqlite3
+from aqt.utils import showInfo, askUser
 from sqlite3 import connect
 from os.path import dirname, join, realpath
-import re
 import getpass
-import requests
-from bs4 import BeautifulSoup
-import webbrowser
-from aqt.addons import ConfigEditor, AddonsDialog
 
 db_path = join(dirname(realpath(__file__)), 'database.db')
 conn = connect(db_path)
@@ -65,7 +57,6 @@ def WordFinder():
 
 			if len(traditional) >= min_length and len(traditional) <= max_lenght:  
 				if any(x in english.lower() for x in filter_list):
-					showInfo("Damn")
 					continue
 
 				else:

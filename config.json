@@ -1,1 +1,1 @@
-{"language": "English", "exclude_subdeck": ["parent deck::sub deck"],"tos": 1, "deckname": ["Default"],"filter": ["variant","surname","county","province","prefecture","town","city"], "min_length": 2, "max_lenght": 0, "field_number": 0, "HSK": 6}
+{"language": "English", "exclude_subdeck": ["parentdeck::subdeck"],"tos": 1, "deckname": ["Default"],"filter": ["variant","surname","county","province","prefecture","town","city"], "min_length": 2, "max_lenght": 0, "field_number": 0, "HSK": 6}

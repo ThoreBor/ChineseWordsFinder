@@ -1,12 +1,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from aqt import mw
-import aqt
 from aqt.qt import *
 import os
-import sys
-from aqt.utils import showInfo
 from os.path import dirname, join, realpath
-from aqt.utils import showInfo, askUser, showWarning, tooltip
+from aqt.utils import tooltip
+from sqlite3 import connect
+
+db_path = join(dirname(realpath(__file__)), 'database.db')
+conn = connect(db_path)
+c = conn.cursor()
+config = mw.addonManager.getConfig(__name__)
+language = config['language']
 
 class Ui_Config(object):
     def setupUi(self, Config):
@@ -151,21 +155,24 @@ class Ui_Config(object):
     def retranslateUi(self, Config):
         config = mw.addonManager.getConfig(__name__)
         _translate = QtCore.QCoreApplication.translate
-        Config.setWindowTitle(_translate("Config", "Configurations"))
+        Config.setWindowTitle(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Config Title' ").fetchone())))
 
-        self.Deck_Label.setText(_translate("Config", "Decks you want to analyse:"))
+        self.Deck_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Deck Label' ").fetchone())))
         self.Decks.setText(','.join(config["deckname"]))
+        self.Decks.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Decks Tip' ").fetchone()))
 
-        self.Subdecks_Label.setText(_translate("Config", "Subdecks you want to exclude:"))
+        self.Subdecks_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Subdecks Label' ").fetchone())))
         self.Subdecks.setText(','.join(config["exclude_subdeck"]))
+        self.Subdecks.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Subdecks Tip' ").fetchone()))
         
         load_tos = config["tos"]
         if load_tos == 1:
-            self.TOS.setItemText(0, _translate("Config", "Simplified"))
-            self.TOS.setItemText(1, _translate("Config", "Traditional"))
+            self.TOS.setItemText(0, _translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'TOS Simp' ").fetchone())))
+            self.TOS.setItemText(1, _translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'TOS Trad' ").fetchone())))
         else:
-            self.TOS.setItemText(0, _translate("Config", "Traditional"))
-            self.TOS.setItemText(1, _translate("Config", "Simplified"))
+            self.TOS.setItemText(0, _translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'TOS Trad' ").fetchone())))
+            self.TOS.setItemText(1, _translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'TOS Simp' ").fetchone())))
+        self.TOS.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'TOS Tip' ").fetchone()))
 
         load_hsk = config["HSK"]
         hsk_list = []
@@ -181,18 +188,23 @@ class Ui_Config(object):
         self.HSK.setItemText(3, _translate("Config", str(hsk_list[3])))
         self.HSK.setItemText(4, _translate("Config", str(hsk_list[4])))
         self.HSK.setItemText(5, _translate("Config", str(hsk_list[5])))
+        self.HSK.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'HSK Tip' ").fetchone()))
 
-        self.Filter_Label.setText(_translate("Config", "Filterwords that won\'t appear in the results:"))
+        self.Filter_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Filter Label' ").fetchone())))
         self.Filter.setText(','.join(config["filter"]))
+        self.Filter.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Filter Tip' ").fetchone()))
 
-        self.Field_Label.setText(_translate("Config", "Field you want to analyse:"))
+        self.Field_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Field Label' ").fetchone())))
         self.Field_Number.setValue(config["field_number"])
+        self.Field_Number.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Field Tip' ").fetchone()))
 
-        self.Max_Label.setText(_translate("Config", "Maximum length of output words:"))
+        self.Max_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Max Label' ").fetchone())))
         self.Max.setValue(config["max_lenght"])
+        self.Max.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Max Tip' ").fetchone()))
 
-        self.Min_Label.setText(_translate("Config", "Minimum length of output words:"))
+        self.Min_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Min Label' ").fetchone())))
         self.Min.setValue(config["min_length"])
+        self.Min.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Min Tip' ").fetchone()))
 
 
         load_language = config["language"]
@@ -202,14 +214,19 @@ class Ui_Config(object):
         else: 
             self.Language.setItemText(0, _translate("Config", "German"))
             self.Language.setItemText(1, _translate("Config", "English"))
+        self.Language.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Language Tip' ").fetchone()))
 
-        self.Default_Button.setText(_translate("Config", "Restore Defaults"))
-        self.Save_Button.setText(_translate("Config", "Save"))
+        self.Default_Button.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Restore Label' ").fetchone())))
+        self.Default_Button.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Restore Tip' ").fetchone()))
+        self.Save_Button.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Save Label' ").fetchone())))
+        
 
     def save_config(self):
         decks_config = self.Decks.text()
+        decks_config = decks_config.replace(", ", ",")
         decks_config = decks_config.split(",")
         subdecks_config = self.Subdecks.text()
+        subdecks_config = subdecks_config.replace(", ", ",")
         subdecks_config = subdecks_config.split(",")
         TOS_config = self.TOS.currentText()
         if TOS_config == 'Traditional':
@@ -217,6 +234,7 @@ class Ui_Config(object):
         if TOS_config == 'Simplified':
             TOS_config = 1
         filter_config = self.Filter.text()
+        filter_config = filter_config.replace(", ", ",")
         filter_config = filter_config.split(",")
         HSK_config = self.HSK.currentText()
         HSK_config = int(HSK_config.replace("HSK ",""))
@@ -233,7 +251,6 @@ class Ui_Config(object):
 
     def default(self):
         os.remove(join(dirname(realpath(__file__)), 'meta.json'))
-        tooltip("Reopen this window to load the default configurations.")
 
 class start_config(QDialog):
     def __init__(self, parent=None):
