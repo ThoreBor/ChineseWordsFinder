@@ -15,6 +15,7 @@ language = config['language']
 class Ui_Config(object):
     def setupUi(self, Config):
         Config.setObjectName("Config")
+        Config.setWindowIcon(QtGui.QIcon(join(dirname(realpath(__file__)), 'config_icon.png')))
         Config.setWindowModality(QtCore.Qt.NonModal)
         Config.setEnabled(True)
         Config.resize(398, 470)
