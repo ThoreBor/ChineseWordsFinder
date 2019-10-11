@@ -1,4 +1,4 @@
-# Chinese Words Finder V1.5 Copyright 2019 Thore Tyborski
+# Chinese Words Finder V1.6 Copyright 2019 Thore Tyborski
 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -37,7 +37,7 @@ db_path = join(dirname(realpath(__file__)), 'database.db')
 conn = connect(db_path)
 c = conn.cursor()
 all_data = ""
-this_version = "V1.5"
+this_version = "V1.6"
 config = mw.addonManager.getConfig(__name__)
 language = config['language']
 
