@@ -32,6 +32,7 @@ from .WordFinder import WordFinder
 from .HSK import hskFinder
 from .freq import frequency
 from .config import start_config
+from .search_dictionary import start_search_dialog
 
 db_path = join(dirname(realpath(__file__)), 'database.db')
 conn = connect(db_path)
@@ -117,6 +118,7 @@ def add_menu(Name, Button, exe, *sc):
 
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 1' ").fetchone()), WordFinder, 'Ctrl+W')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 2' ").fetchone()), hskFinder, 'Ctrl+H')
+add_menu('CWF','Add cards from dictionary', start_search_dialog)
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 3' ").fetchone()), frequency, 'Ctrl+F')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 4' ").fetchone()), config, 'Ctrl+Alt+C')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 5' ").fetchone()), Update, 'Ctrl+U')

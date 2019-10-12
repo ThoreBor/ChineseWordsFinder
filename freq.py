@@ -1,4 +1,5 @@
 from .getdata import getdata
+from .import_file import importfile
 from aqt import mw
 from aqt.utils import askUser, showWarning, tooltip
 from aqt.qt import *
@@ -9,8 +10,6 @@ import getpass
 db_path = join(dirname(realpath(__file__)), 'database.db')
 conn = connect(db_path)
 c = conn.cursor()
-all_data = ""
-this_version = "V1.5"
 config = mw.addonManager.getConfig(__name__)
 language = config['language']
 
@@ -50,8 +49,9 @@ def frequency():
 				anki_file.write(f_file)
 				tooltip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'File location desktop' ").fetchone()))
 			except:
-				anki_file =  open("CharacterFrequency.txt", "w", encoding="utf-8")
+				anki_file =  open(join(dirname(realpath(__file__)), 'CharacterFrequency.txt'), "w", encoding="utf-8")
 				anki_file.write(f_file)
 				tooltip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'File location media folder' ").fetchone()))
+		anki_file.close()
 	except:
 		showWarning(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Frequency warning' ").fetchone()))

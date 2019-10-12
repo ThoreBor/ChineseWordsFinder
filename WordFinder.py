@@ -1,4 +1,5 @@
 from .getdata import getdata
+from .import_file import importfile
 from aqt import mw
 from aqt.utils import showInfo, askUser
 from sqlite3 import connect
@@ -8,8 +9,6 @@ import getpass
 db_path = join(dirname(realpath(__file__)), 'database.db')
 conn = connect(db_path)
 c = conn.cursor()
-all_data = ""
-this_version = "V1.5"
 config = mw.addonManager.getConfig(__name__)
 language = config['language']
 
@@ -24,11 +23,12 @@ def WordFinder():
 		anki_file.write(textfile_info)
 		d = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'File location desktop' ").fetchone())
 	except:
-		anki_file =  open("WordsFound.txt", "w", encoding="utf-8")
+		anki_file =  open(join(dirname(realpath(__file__)), 'WordsFound.txt'), "w", encoding="utf-8")
 		anki_file.write(textfile_info)
 		d = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'File location media folder' ").fetchone())
-	info = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Word Finder info' ").fetchone()) % {'number_of_characters':number_of_characters, 'deckname':decknames, 'note_number': len(notes_in_deck), 'd': d
-				}
+	info = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Word Finder info' ").fetchone()) % {'number_of_characters':number_of_characters, 'deckname':decknames, 'note_number': len(notes_in_deck), 'd': d}
+	
+	raw =  open(join(dirname(realpath(__file__)), 'WordsFound_raw.txt'), "w", encoding="utf-8")
 	if not askUser(info, title=''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 1' ").fetchone())):
 		return
 
@@ -64,11 +64,15 @@ def WordFinder():
 						found = found + 1
 						line = str(traditional + "\t" + simplified + "\t" + p + "\t" + english + "\n")
 						anki_file.write(line)
+						raw.write(line)
 					else:
 						continue
 
 		msg = d = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Word Finder progress' ").fetchone()) % {'hanzi': trad, 'counter': counter, 'total': 117272, 'found': found,}
 		mw.progress.update(label=msg, value=counter)
 	anki_file.close()
+	raw.close()
 	mw.progress.finish()
+	if config["checked"] == "True":
+		importfile("WordsFound_raw.txt", config["import_deck"], config["import_notetype"])
 	showInfo(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Words found' ").fetchone()) % (found), title=''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 1' ").fetchone()))

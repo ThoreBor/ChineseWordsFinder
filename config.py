@@ -3,7 +3,7 @@ from aqt import mw
 from aqt.qt import *
 import os
 from os.path import dirname, join, realpath
-from aqt.utils import tooltip
+from aqt.utils import tooltip, showInfo
 from sqlite3 import connect
 
 db_path = join(dirname(realpath(__file__)), 'database.db')
@@ -28,6 +28,14 @@ class Ui_Config(object):
         self.gridLayout.setObjectName("gridLayout")
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
+
+        self.Hover = QtWidgets.QLabel(Config)
+        font = QtGui.QFont()
+        font.setItalic(True)
+        font.setKerning(True)
+        self.Hover.setFont(font)
+        self.Hover.setObjectName("Hover")
+        self.verticalLayout.addWidget(self.Hover)
 
         self.Deck_Label = QtWidgets.QLabel(Config)
         font = QtGui.QFont()
@@ -112,6 +120,35 @@ class Ui_Config(object):
         self.Min.setObjectName("Min")
         self.verticalLayout.addWidget(self.Min)
 
+        self.Check_Import = QtWidgets.QCheckBox(Config)
+        self.Check_Import.setObjectName("Check_Import")
+        self.verticalLayout.addWidget(self.Check_Import)
+        self.Check_Import.stateChanged.connect(self.checked)
+
+        self.Import_Notetype_Label = QtWidgets.QLabel(Config)
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.Import_Notetype_Label.setFont(font)
+        self.Import_Notetype_Label.setObjectName("Import_Notetype_Label")
+        self.verticalLayout.addWidget(self.Import_Notetype_Label)
+
+        self.Import_Notetype = QtWidgets.QLineEdit(Config)
+        self.Import_Notetype.setEnabled(False)
+        self.Import_Notetype.setObjectName("Import_Notetype")
+        self.verticalLayout.addWidget(self.Import_Notetype)
+
+        self.Import_Deck_Label = QtWidgets.QLabel(Config)
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.Import_Deck_Label.setFont(font)
+        self.Import_Deck_Label.setObjectName("Import_Deck_Label")
+        self.verticalLayout.addWidget(self.Import_Deck_Label)
+
+        self.Import_Deck = QtWidgets.QLineEdit(Config)
+        self.Import_Deck.setEnabled(False)
+        self.Import_Deck.setObjectName("Import_Deck")
+        self.verticalLayout.addWidget(self.Import_Deck)
+
         self.Language = QtWidgets.QComboBox(Config)
         self.Language.setObjectName("Language")
         self.Language.addItem("")
@@ -157,6 +194,8 @@ class Ui_Config(object):
         config = mw.addonManager.getConfig(__name__)
         _translate = QtCore.QCoreApplication.translate
         Config.setWindowTitle(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Config Title' ").fetchone())))
+
+        self.Hover.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Hover info' ").fetchone())))
 
         self.Deck_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Deck Label' ").fetchone())))
         self.Decks.setText(','.join(config["deckname"]))
@@ -207,6 +246,14 @@ class Ui_Config(object):
         self.Min.setValue(config["min_length"])
         self.Min.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Min Tip' ").fetchone()))
 
+        self.Check_Import.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Checkbox info' ").fetchone())))
+        if config["checked"] == "True":
+            self.Check_Import.toggle()
+
+        self.Import_Notetype_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Notetype Label' ").fetchone())))
+        self.Import_Notetype.setText(config["import_notetype"])
+        self.Import_Deck_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Deck Import Label' ").fetchone())))
+        self.Import_Deck.setText(config["import_deck"])
 
         load_language = config["language"]
         if load_language == "English":
@@ -242,16 +289,31 @@ class Ui_Config(object):
         field_number_config = self.Field_Number.value()
         max_config = self.Max.value()
         min_config = self.Min.value()
+        if self.Check_Import.isChecked():
+            toggled = "True"
+            showInfo(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Checked info' ").fetchone()))
+        else:
+            toggled = "False"
+        import_notetype_config = self.Import_Notetype.text()
+        import_deck_config = self.Import_Deck.text()
         language_config = self.Language.currentText()
 
-        config = {"language": language_config, "exclude_subdeck": subdecks_config,
+        config = {"checked": toggled,"import_notetype": import_notetype_config, "import_deck": import_deck_config, "language": language_config, "exclude_subdeck": subdecks_config,
         "tos": TOS_config, "deckname": decks_config,"filter": filter_config, 
         "min_length": min_config, "max_lenght": max_config, "field_number": field_number_config, "HSK": HSK_config}
         mw.addonManager.writeConfig(__name__, config)
-        tooltip("Saved successfully.")
+        tooltip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Saved' ").fetchone()))
 
     def default(self):
         os.remove(join(dirname(realpath(__file__)), 'meta.json'))
+    
+    def checked(self):
+        if self.Check_Import.isChecked():
+            self.Import_Notetype.setEnabled(True)
+            self.Import_Deck.setEnabled(True)
+        else:
+            self.Import_Notetype.setEnabled(False)
+            self.Import_Deck.setEnabled(False)
 
 class start_config(QDialog):
     def __init__(self, parent=None):

@@ -1,4 +1,5 @@
 from .getdata import getdata
+from .import_file import importfile
 from aqt import mw
 from aqt.utils import showInfo, askUser
 from sqlite3 import connect
@@ -8,8 +9,6 @@ import getpass
 db_path = join(dirname(realpath(__file__)), 'database.db')
 conn = connect(db_path)
 c = conn.cursor()
-all_data = ""
-this_version = "V1.5"
 config = mw.addonManager.getConfig(__name__)
 language = config['language']
 
@@ -29,14 +28,17 @@ def hskFinder():
 		hsk_list.append("HSK "+str(i))
 
 	textfile_info = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Output-file info' ").fetchone())  % {'config':config} % {'config':config}
+
 	try:
 		anki_file =  open("C:/Users/"+username+"/Desktop/MissingHSK.txt", "w", encoding="utf-8")
 		anki_file.write(textfile_info)
 		d = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'File location desktop' ").fetchone())
 	except:
-		anki_file =  open("MissingHSK.txt", "w", encoding="utf-8")
+		anki_file =  open(join(dirname(realpath(__file__)), 'MissingHSK.txt'), "w", encoding="utf-8")
 		anki_file.write(textfile_info)
 		d = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'File location media folder' ").fetchone())
+	raw =  open(join(dirname(realpath(__file__)), 'MissingHSK_raw.txt'), "w", encoding="utf-8")
+
 	info = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'HSK info' ").fetchone()) % {'hsk': HSK, 'deckname':decknames, 'note_number': len(notes_in_deck), "d": d}
 	if not askUser(info, title=''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 2' ").fetchone())):
 		return
@@ -67,6 +69,7 @@ def hskFinder():
 			found = found + 1
 			line = str(traditional + "\t" + simplified + "\t" + p + "\t" + english + "\t" + hsk_lvl + "\n")
 			anki_file.write(line)
+			raw.write(line)
 
 		msg = ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'HSK progress' ").fetchone()) % {'hanzi': hanzi, 'counter': counter, 'total': 5000, 'found': found,}
 		mw.progress.update(label=msg, value=counter)
@@ -76,5 +79,8 @@ def hskFinder():
 			extra_list.append(i)
 	anki_file.write(str(extra_list))
 	anki_file.close()
+	raw.close()
 	mw.progress.finish()
+	if config["checked"] == "True":
+		importfile("MissingHSK_raw.txt", config["import_deck"], config["import_notetype"])
 	showInfo(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'HSK found' ").fetchone()) % (found, extra), title=''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 2' ").fetchone()))
