@@ -14,6 +14,21 @@ language = config['language']
 
 class Ui_Config(object):
     def setupUi(self, Config):
+
+        out=mw.col.decks.all()
+        decklist = []
+        subdeckslist = []
+        for l in out:
+           decklist.append(l['name'])
+        for i in decklist:
+            if "::" in i:
+                subdeckslist.append(i)
+        
+        out=mw.col.models.all()
+        notetypelist = []
+        for l in out:
+           notetypelist.append(l['name'])
+
         Config.setObjectName("Config")
         Config.setWindowIcon(QtGui.QIcon(join(dirname(realpath(__file__)), 'config_icon.png')))
         Config.setWindowModality(QtCore.Qt.NonModal)
@@ -46,6 +61,8 @@ class Ui_Config(object):
 
         self.Decks = QtWidgets.QLineEdit(Config)
         self.Decks.setObjectName("Decks")
+        # for i in decklist:
+        #     self.Decks.addItem(str(i))
         self.verticalLayout.addWidget(self.Decks)
 
         self.Subdecks_Label = QtWidgets.QLabel(Config)
@@ -57,6 +74,8 @@ class Ui_Config(object):
 
         self.Subdecks = QtWidgets.QLineEdit(Config)
         self.Subdecks.setObjectName("Subdecks")
+        # for i in subdeckslist:
+        #     self.Subdecks.addItem(str(i))
         self.verticalLayout.addWidget(self.Subdecks)
 
         self.TOS = QtWidgets.QComboBox(Config)
@@ -121,6 +140,9 @@ class Ui_Config(object):
         self.verticalLayout.addWidget(self.Min)
 
         self.Check_Import = QtWidgets.QCheckBox(Config)
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.Check_Import.setFont(font)
         self.Check_Import.setObjectName("Check_Import")
         self.verticalLayout.addWidget(self.Check_Import)
         self.Check_Import.stateChanged.connect(self.checked)
@@ -132,9 +154,11 @@ class Ui_Config(object):
         self.Import_Notetype_Label.setObjectName("Import_Notetype_Label")
         self.verticalLayout.addWidget(self.Import_Notetype_Label)
 
-        self.Import_Notetype = QtWidgets.QLineEdit(Config)
+        self.Import_Notetype = QtWidgets.QComboBox(Config)
         self.Import_Notetype.setEnabled(False)
         self.Import_Notetype.setObjectName("Import_Notetype")
+        for i in notetypelist:
+            self.Import_Notetype.addItem(str(i))
         self.verticalLayout.addWidget(self.Import_Notetype)
 
         self.Import_Deck_Label = QtWidgets.QLabel(Config)
@@ -144,10 +168,19 @@ class Ui_Config(object):
         self.Import_Deck_Label.setObjectName("Import_Deck_Label")
         self.verticalLayout.addWidget(self.Import_Deck_Label)
 
-        self.Import_Deck = QtWidgets.QLineEdit(Config)
+        self.Import_Deck = QtWidgets.QComboBox(Config)
         self.Import_Deck.setEnabled(False)
         self.Import_Deck.setObjectName("Import_Deck")
+        for i in decklist:
+            self.Import_Deck.addItem(str(i))
         self.verticalLayout.addWidget(self.Import_Deck)
+
+        self.Language_Label = QtWidgets.QLabel(Config)
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.Language_Label.setFont(font)
+        self.Language_Label.setObjectName("Language_Label")
+        self.verticalLayout.addWidget(self.Language_Label)
 
         self.Language = QtWidgets.QComboBox(Config)
         self.Language.setObjectName("Language")
@@ -214,20 +247,14 @@ class Ui_Config(object):
             self.TOS.setItemText(1, _translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'TOS Simp' ").fetchone())))
         self.TOS.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'TOS Tip' ").fetchone()))
 
-        load_hsk = config["HSK"]
-        hsk_list = []
-        hsk_list.append('HSK '+str(load_hsk))
-        for i in range(1, load_hsk):
-            hsk_list.append('HSK '+str(i))
-        for i in range(load_hsk, 7):
-            hsk_list.append('HSK '+str(i))
-        hsk_list = list(dict.fromkeys(hsk_list))        
-        self.HSK.setItemText(0, _translate("Config", str(hsk_list[0])))
-        self.HSK.setItemText(1, _translate("Config", str(hsk_list[1])))
-        self.HSK.setItemText(2, _translate("Config", str(hsk_list[2])))
-        self.HSK.setItemText(3, _translate("Config", str(hsk_list[3])))
-        self.HSK.setItemText(4, _translate("Config", str(hsk_list[4])))
-        self.HSK.setItemText(5, _translate("Config", str(hsk_list[5])))
+        load_hsk = "HSK " + str(config["HSK"])        
+        self.HSK.setItemText(0, _translate("Config", "HSK 1"))
+        self.HSK.setItemText(1, _translate("Config", "HSK 2"))
+        self.HSK.setItemText(2, _translate("Config", "HSK 3"))
+        self.HSK.setItemText(3, _translate("Config", "HSK 4"))
+        self.HSK.setItemText(4, _translate("Config", "HSK 5"))
+        self.HSK.setItemText(5, _translate("Config", "HSK 6"))
+        self.HSK.setCurrentText(load_hsk)
         self.HSK.setToolTip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'HSK Tip' ").fetchone()))
 
         self.Filter_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Filter Label' ").fetchone())))
@@ -251,9 +278,11 @@ class Ui_Config(object):
             self.Check_Import.toggle()
 
         self.Import_Notetype_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Notetype Label' ").fetchone())))
-        self.Import_Notetype.setText(config["import_notetype"])
+        self.Import_Notetype.setCurrentText(config["import_notetype"])
         self.Import_Deck_Label.setText(_translate("Config", ''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Deck Import Label' ").fetchone())))
-        self.Import_Deck.setText(config["import_deck"])
+        self.Import_Deck.setCurrentText(config["import_deck"])
+
+        self.Language_Label.setText(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Language Label' ").fetchone()))
 
         load_language = config["language"]
         if load_language == "English":
@@ -294,8 +323,8 @@ class Ui_Config(object):
             showInfo(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Checked info' ").fetchone()))
         else:
             toggled = "False"
-        import_notetype_config = self.Import_Notetype.text()
-        import_deck_config = self.Import_Deck.text()
+        import_notetype_config = self.Import_Notetype.currentText()
+        import_deck_config = self.Import_Deck.currentText()
         language_config = self.Language.currentText()
 
         config = {"checked": toggled,"import_notetype": import_notetype_config, "import_deck": import_deck_config, "language": language_config, "exclude_subdeck": subdecks_config,
@@ -303,7 +332,6 @@ class Ui_Config(object):
         "min_length": min_config, "max_lenght": max_config, "field_number": field_number_config, "HSK": HSK_config}
         mw.addonManager.writeConfig(__name__, config)
         tooltip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Saved' ").fetchone()))
-
     def default(self):
         os.remove(join(dirname(realpath(__file__)), 'meta.json'))
     

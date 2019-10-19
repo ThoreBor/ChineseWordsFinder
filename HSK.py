@@ -12,7 +12,6 @@ c = conn.cursor()
 config = mw.addonManager.getConfig(__name__)
 language = config['language']
 
-
 def hskFinder():
 	all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_list, min_length, max_lenght, word_list, config, raw = getdata()
 	username = getpass.getuser()
@@ -67,7 +66,7 @@ def hskFinder():
 			english = row[3]
 			english = english.replace("\n", "")
 			found = found + 1
-			line = str(traditional + "\t" + simplified + "\t" + p + "\t" + english + "\t" + hsk_lvl + "\n")
+			line = str(simplified + "\t" + traditional + "\t" + p + "\t" + english + "\t" + hsk_lvl + "\n")
 			anki_file.write(line)
 			raw.write(line)
 

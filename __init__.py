@@ -1,4 +1,4 @@
-# Chinese Words Finder V1.6 Copyright 2019 Thore Tyborski
+# Chinese Words Finder V1.7 Copyright 2019 Thore Tyborski
 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -38,7 +38,7 @@ db_path = join(dirname(realpath(__file__)), 'database.db')
 conn = connect(db_path)
 c = conn.cursor()
 all_data = ""
-this_version = "V1.6"
+this_version = "V1.7"
 config = mw.addonManager.getConfig(__name__)
 language = config['language']
 
@@ -66,6 +66,11 @@ def github():
 
 def config():
 	s = start_config()
+	if s.exec():
+		pass
+
+def sdaac():
+	s = start_search_dialog()
 	if s.exec():
 		pass
 
@@ -118,7 +123,7 @@ def add_menu(Name, Button, exe, *sc):
 
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 1' ").fetchone()), WordFinder, 'Ctrl+W')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 2' ").fetchone()), hskFinder, 'Ctrl+H')
-add_menu('CWF','Add cards from dictionary', start_search_dialog)
+add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 8' ").fetchone()), sdaac, 'Ctrl+Alt+A')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 3' ").fetchone()), frequency, 'Ctrl+F')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 4' ").fetchone()), config, 'Ctrl+Alt+C')
 add_menu('CWF',''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Title 5' ").fetchone()), Update, 'Ctrl+U')

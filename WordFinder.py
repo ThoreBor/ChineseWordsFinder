@@ -62,7 +62,7 @@ def WordFinder():
 				else:
 					if trad not in word_list:
 						found = found + 1
-						line = str(traditional + "\t" + simplified + "\t" + p + "\t" + english + "\n")
+						line = str(simplified + "\t" + traditional + "\t" +  p + "\t" + english + "\n")
 						anki_file.write(line)
 						raw.write(line)
 					else:
