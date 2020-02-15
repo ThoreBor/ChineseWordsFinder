@@ -759,7 +759,7 @@ class Ui_Main(object):
 							if self.Field4.currentText() == "Nothing":
 								Field4_content = ""
 
-							Card = str(Field1_content + "\t" + Field2_content + "\t" + Field3_content + "\t" + Field4_content)
+							Card = str(Field1_content + "\t" + Field2_content + "\t" + Field3_content + "\t" + Field4_content + "\n")
 							anki_file.write(Card)
 							self.Results.addItem(Card)
 							self.Found_Value.setText(str(found))
@@ -839,7 +839,7 @@ class Ui_Main(object):
 						Field4_content = english
 					if self.Field4.currentText() == "Nothing":
 						Field4_content = ""
-					Card = str(Field1_content + "\t" + Field2_content + "\t" + Field3_content + "\t" + Field4_content)
+					Card = str(Field1_content + "\t" + Field2_content + "\t" + Field3_content + "\t" + Field4_content + "\n")
 					anki_file.write(Card)
 					self.Results_HSK.addItem(Card)
 					self.Found_HSK_Value.setText(str(found))
