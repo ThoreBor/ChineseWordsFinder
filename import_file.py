@@ -23,6 +23,6 @@ def importfile(filename, deck, type):
 		ti = TextImporter(mw.col, file)
 		ti.initMapping()
 		ti.run()
-		tooltip(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Import success' ").fetchone()))
+		tooltip('Successfully imported results.')
 	except:
-		showWarning(''.join(c.execute("SELECT "+language+" FROM language WHERE Description = 'Import Error' ").fetchone()))
+		showWarning('<b>Import error</b><br>Make sure that the notetype and deck exist and that you have enough fields.')
