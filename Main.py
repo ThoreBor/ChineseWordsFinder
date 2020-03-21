@@ -660,11 +660,17 @@ class Ui_Main(object):
 		self.Results_HSK.clear()
 		self.pbar_HSK.setValue(0)
 		self.pbar.setValue(0)
+		self.Found_HSK_Value.setText("0")
+		self.Found_Value.setText("0")
 		self.start_freq()
 		tooltip('Saved successfully.')
 	
 	def default(self):
-		os.remove(join(dirname(realpath(__file__)), 'meta.json'))
+		try:
+			os.remove(join(dirname(realpath(__file__)), 'meta.json'))
+			tooltip("Please restart the add-on.")
+		except:
+			tooltip("Please restart the add-on.")
 	
 	def checked(self):
 		if self.Check_Import.isChecked():
@@ -774,10 +780,6 @@ class Ui_Main(object):
 		all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_list, min_length, max_lenght, word_list, config, raw = getdata()
 		HSK = config['HSK']
 		hsk_list = []
-		if tos == 0:
-			tos = 1
-		else:
-			tos = 0
 		for i in range(HSK + 1):
 			hsk_list.append("HSK "+str(i))
 		anki_file =  open(join(dirname(realpath(__file__)), 'MissingHSK.txt'), "w", encoding="utf-8")
@@ -793,8 +795,8 @@ class Ui_Main(object):
 				hsk_word_list.append(hanzi)
 				hsk_lvl = row[4]
 				if hanzi not in word_list and hsk_lvl in hsk_list:
-					traditional = row[1]
-					simplified = row[0]
+					traditional = row[0]
+					simplified = row[1]
 					p = row[2]
 					english = row[3]
 					english = english.replace("\n", "")
