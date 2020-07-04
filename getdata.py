@@ -10,7 +10,6 @@ def getdata():
 	all_data = ""
 	notes_in_deck = []
 	notes_in_sub_deck = []
-	decknames = ""
 	word_list = []
 	config = mw.addonManager.getConfig(__name__)
 	deckname = config['deckname']
@@ -25,15 +24,16 @@ def getdata():
 		max_lenght = 25
 	
 	for i in deckname:
-		decknames = decknames + i + " and "
-		searchterm = "deck:'" + i + "'"
-		notes_in_deck = notes_in_deck + mw.col.findNotes(searchterm)
+		find_ids = mw.col.findNotes("deck:" + i)
+		for i in find_ids:
+			notes_in_deck.append(i)
 
 	
 	if exclude_subdeck != "parent deck::sub deck":
 		for i in exclude_subdeck:
-			sub_searchterm = "deck:'" + i + "'"
-			notes_in_sub_deck = notes_in_sub_deck + mw.col.findNotes(sub_searchterm)
+			find_ids = mw.col.findNotes("deck:" + i)
+			for i in find_ids:
+				notes_in_sub_deck.append(i)
 		for i in notes_in_sub_deck:
 			notes_in_deck.remove(i)
 
@@ -52,12 +52,11 @@ def getdata():
 			except:
 				continue
 
-	decknames = decknames[:-5]
 	all_data = extractChinese(all_data)
 	raw = all_data
 	all_data = ''.join(set(all_data))
 	all_data_list = list(all_data)
 	number_of_characters = len(all_data_list)
 	
-	return all_data_list, notes_in_deck, number_of_characters, decknames, tos, filter_list, min_length, max_lenght, word_list, config, raw
+	return all_data_list, notes_in_deck, number_of_characters, tos, filter_list, min_length, max_lenght, word_list, config, raw
 
