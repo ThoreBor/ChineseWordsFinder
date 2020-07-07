@@ -28,9 +28,9 @@ class start_main(QDialog):
 	def setupUI(self):
 		all_data_list, notes_in_deck, number_of_characters, tos, filter_list, min_length, max_lenght, word_list, config, raw = getdata()
 
-		self.dialog.pbar.setMaximum(117272)
+		self.dialog.pbar.setMaximum(118398)
 
-		out=mw.col.decks.all()
+		out = mw.col.decks.all()
 		decklist = []
 		subdeckslist = []
 		for l in out:
@@ -39,7 +39,7 @@ class start_main(QDialog):
 			if "::" in i:
 				subdeckslist.append(i)
 		
-		out=mw.col.models.all()
+		out = mw.col.models.all()
 		notetypelist = []
 		for l in out:
 		   notetypelist.append(l['name'])
@@ -71,9 +71,7 @@ class start_main(QDialog):
 		if config["checked"] == "True":
 			self.dialog.Check_Import.toggle()
 
-
-		load_tos = config["tos"]
-		if load_tos == 1:
+		if config["tos"] == 1:
 			self.dialog.TOS.setItemText(0, 'Simplified')
 			self.dialog.TOS.setItemText(1, 'Traditional')
 		else:

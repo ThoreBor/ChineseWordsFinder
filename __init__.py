@@ -33,9 +33,10 @@ def github():
 	webbrowser.open('https://github.com/ThoreBor/ChineseWordsFinder/issues')
 
 def Main():
-	s = start_main()
-	if s.exec():
-		pass
+	mw.wordfinder = start_main()
+	mw.wordfinder.show()
+	mw.wordfinder.raise_()
+	mw.wordfinder.activateWindow()
 
 def add_menu(Name, Button, exe, *sc):
 	action = QAction(Button, mw)

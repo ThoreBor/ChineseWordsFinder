@@ -1,4 +1,5 @@
 from aqt import mw
+from aqt.utils import showWarning
 import re
 
 def extractChinese(output):
@@ -25,13 +26,17 @@ def getdata():
 	
 	for i in deckname:
 		find_ids = mw.col.findNotes("deck:" + i)
+		if len(find_ids) == 0 and i != "Default":
+			showWarning("Couldn't find any cards in " + str(i))
 		for i in find_ids:
 			notes_in_deck.append(i)
 
 	
-	if exclude_subdeck != "parent deck::sub deck":
+	if "parentdeck::subdeck" not in exclude_subdeck:
 		for i in exclude_subdeck:
 			find_ids = mw.col.findNotes("deck:" + i)
+			if len(find_ids) == 0:
+				showWarning("Couldn't find any cards in " + str(i))
 			for i in find_ids:
 				notes_in_sub_deck.append(i)
 		for i in notes_in_sub_deck:

@@ -11,20 +11,21 @@ def frequency():
 	try:
 		freq_list = []
 		all_data_list, notes_in_deck, number_of_characters, tos, filter_list, min_length, max_lenght, word_list, config, raw = getdata()
-		unique = []
-		value = []
-		counter = 0
-		for i in all_data_list:
-			unique.append(i)
-			value.append(raw.count(i))
-		value, unique = zip(*sorted(zip(value, unique)))
-		value, unique = (list(t) for t in zip(*sorted(zip(value, unique))))
-		unique = unique[::-1]
-		value = value[::-1]
-		for i in unique:
-			freq_results = (str(counter+1) + ": " + i + "(" + str(value[counter]) + ")"+ "\n")
-			counter = counter + 1
-			freq_list.append(freq_results)
+		if len(all_data_list) != 0:
+			unique = []
+			value = []
+			counter = 0
+			for i in all_data_list:
+				unique.append(i)
+				value.append(raw.count(i))
+			value, unique = zip(*sorted(zip(value, unique)))
+			value, unique = (list(t) for t in zip(*sorted(zip(value, unique))))
+			unique = unique[::-1]
+			value = value[::-1]
+			for i in unique:
+				freq_results = (str(counter+1) + ": " + i + "(" + str(value[counter]) + ")"+ "\n")
+				counter = counter + 1
+				freq_list.append(freq_results)
 	except:
 		showWarning("Error - Calculating frequency failed.")
 	return freq_list
